@@ -5,6 +5,6 @@ Users can register, login, deposit money, withdraw money, and view transaction h
 
 🚀 Live Demo
 
-👉 Live Website: https://your-live-link-here
+👉 Live Website: https://simple-banking-system-q5oc.onrender.com
 
-👉 API Base URL: https://your-backend-link-here
+👉 API Base URL: https://simple-banking-system-api.onrender.com
