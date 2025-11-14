@@ -1,17 +1,16 @@
 import React from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import TransactionsPage from "./pages/TransactionsPage";
 import AccountsPage from "./pages/AccountsPage";
 import AuthPage from "./pages/AuthPage";
 import Navbar from "./components/Navbar";
 import { Toaster } from "react-hot-toast";
-import { useState } from "react";
 
 function App() {
   return (
-    <BrowserRouter>
+    <>
       <Routes>
-        {/*  Login */}
+        {/* Login Page */}
         <Route path="/" element={<AuthPage />} />
 
         {/* Customer Transactions */}
@@ -36,8 +35,9 @@ function App() {
           }
         />
       </Routes>
+
       <Toaster />
-    </BrowserRouter>
+    </>
   );
 }
 
