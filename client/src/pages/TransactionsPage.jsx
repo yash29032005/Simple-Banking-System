@@ -70,8 +70,6 @@ export default function TransactionsPage() {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-
   const handleWithdraw = async () => {
     const value = Number(amount);
 
@@ -86,7 +84,7 @@ export default function TransactionsPage() {
       );
 
       if (res.data.message === "Insufficient funds") {
-        return alert("❌ Insufficient Balance");
+        return alert("Insufficient Balance");
       }
 
       toast.success("Withdrawal successful");
@@ -100,13 +98,14 @@ export default function TransactionsPage() {
     }
   };
 
+  if (loading) return <div>Loading...</div>;
+
   return (
     <div
       style={{ height: "auto", minHeight: "calc(100vh - 70px)" }}
       className="bg-black"
     >
       <div className="p-6 max-w-6xl mx-auto">
-        {/* ACCOUNT CARD */}
         <div className="bg-linear-to-r from-secondary to-ternary p-6 rounded-xl text-white shadow-lg">
           <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
             <span>💳</span> Account Overview
@@ -117,7 +116,6 @@ export default function TransactionsPage() {
           <p className="mt-4 text-lg">Available Balance</p>
           <p className="text-4xl font-bold">₹{balance}</p>
 
-          {/* Buttons */}
           <div className="mt-6 grid grid-cols-2 gap-4">
             <button
               onClick={() => setPopup("deposit")}
@@ -135,7 +133,6 @@ export default function TransactionsPage() {
           </div>
         </div>
 
-        {/* TRANSACTIONS LIST */}
         <div className="mt-8 bg-secondary text-white p-6 rounded-xl shadow-md">
           <h3 className="text-xl font-bold mb-1">Transaction History</h3>
 
@@ -180,7 +177,6 @@ export default function TransactionsPage() {
           </table>
         </div>
 
-        {/* POPUP */}
         {popup && (
           <div className="fixed inset-0 flex items-center justify-center bg-black/50">
             <div className="bg-white p-6 rounded-xl w-96 shadow-lg">

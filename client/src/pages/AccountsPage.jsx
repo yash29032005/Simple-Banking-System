@@ -9,9 +9,7 @@ export default function AccountsPage() {
 
   const fetchAccounts = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/users`, {
-        headers: { Authorization: localStorage.getItem("token") },
-      });
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/users`);
       setAccounts(res.data.users || []);
     } catch (err) {
       console.log("Error fetching accounts:", err);
@@ -21,10 +19,7 @@ export default function AccountsPage() {
   const fetchUserTransactions = async (userId) => {
     try {
       const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/${userId}/transactions`,
-        {
-          headers: { Authorization: localStorage.getItem("token") },
-        }
+        `${import.meta.env.VITE_API_URL}/api/${userId}/transactions`
       );
       setTransactions(res.data.transactions || []);
     } catch (err) {
@@ -45,6 +40,7 @@ export default function AccountsPage() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchAccounts();
   }, []);
 
@@ -100,13 +96,9 @@ export default function AccountsPage() {
           </table>
         </div>
 
-        {/* ============================
-          POPUP TRANSACTION MODAL
-      ============================ */}
         {showModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center px-4">
             <div className="bg-secondary text-white p-6 rounded-xl w-full max-w-2xl shadow-lg relative">
-              {/* CLOSE BUTTON */}
               <button
                 onClick={closeModal}
                 className="absolute top-3 right-3 text-white hover:text-secondary"

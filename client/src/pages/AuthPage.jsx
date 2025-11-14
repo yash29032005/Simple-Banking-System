@@ -114,7 +114,6 @@ export default function AuthPage() {
           </button>
         </div>
 
-        {/* ---------------- LOGIN FORM ---------------- */}
         {tab === "login" && (
           <form onSubmit={handleLogin}>
             <label className="text-grey">Email</label>
@@ -137,7 +136,6 @@ export default function AuthPage() {
               required
             />
 
-            {/* ACCOUNT TYPE TOGGLE */}
             <div className="mb-6">
               <label className="text-grey block mb-2">Login As</label>
 
@@ -174,7 +172,6 @@ export default function AuthPage() {
           </form>
         )}
 
-        {/* ---------------- SIGNUP FORM ---------------- */}
         {tab === "signup" && (
           <form onSubmit={handleSignup}>
             <label className="text-grey">Full Name</label>

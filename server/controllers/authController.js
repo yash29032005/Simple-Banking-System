@@ -2,7 +2,6 @@ const pool = require("../config/db");
 const bcrypt = require("bcrypt");
 const { generateToken } = require("../utils/generateToken");
 
-/* ------------------------- LOGIN ------------------------- */
 exports.login = async (req, res) => {
   try {
     const { email, role, password } = req.body;
@@ -25,7 +24,6 @@ exports.login = async (req, res) => {
 
     const token = generateToken(user);
 
-    // ⭐ This is the IMPORTANT line
     res.setHeader("Authorization", `Bearer ${token}`);
 
     return res.status(200).json({
@@ -43,7 +41,6 @@ exports.login = async (req, res) => {
   }
 };
 
-/* ------------------------- REGISTER ------------------------- */
 exports.register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -80,7 +77,6 @@ exports.register = async (req, res) => {
   }
 };
 
-/* ------------------------- LOGOUT ------------------------- */
 exports.logout = async (req, res) => {
   return res.status(200).json({
     message: "Logged out. Frontend should delete token.",

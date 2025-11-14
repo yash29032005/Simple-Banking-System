@@ -1,9 +1,6 @@
 const pool = require("../config/db");
 const { generateAccountNo } = require("../utils/generateAccountNo");
 
-// =============================
-// Get all transactions
-// =============================
 exports.getUserTransactions = async (req, res) => {
   try {
     const userId = req.params.userId;
@@ -20,9 +17,6 @@ exports.getUserTransactions = async (req, res) => {
   }
 };
 
-// =============================
-// Deposit
-// =============================
 exports.deposit = async (req, res) => {
   const connection = await pool.getConnection();
   try {
@@ -72,9 +66,6 @@ exports.deposit = async (req, res) => {
   }
 };
 
-// =============================
-// Withdraw
-// =============================
 exports.withdraw = async (req, res) => {
   const connection = await pool.getConnection();
 
@@ -131,9 +122,6 @@ exports.withdraw = async (req, res) => {
   }
 };
 
-// =============================
-// Get Balance
-// =============================
 exports.getBalance = async (req, res) => {
   try {
     const userId = req.params.userId;

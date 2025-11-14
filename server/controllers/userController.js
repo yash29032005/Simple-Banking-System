@@ -4,20 +4,20 @@ exports.getAllUsers = async (req, res) => {
   try {
     const [rows] = await pool.query(`
       SELECT 
-        u.id,
-        u.name,
-        u.email,
-        u.role,
-        COALESCE((
-          SELECT balance 
-          FROM Accounts 
-          WHERE user_id = u.id 
-          ORDER BY id DESC 
-          LIMIT 1
-        ), 0) AS balance
+      u.id,
+      u.name,
+      u.email,
+      u.role,
+      COALESCE(last_balance.balance, 0) AS balance
       FROM Users u
-      WHERE role="customer"
-      ORDER BY u.id DESC
+      LEFT JOIN (
+          SELECT user_id, balance 
+          FROM Accounts 
+          ORDER BY id DESC
+      ) AS last_balance ON last_balance.user_id = u.id
+      WHERE u.role = 'customer'
+      GROUP BY u.id
+      ORDER BY u.id DESC;
     `);
 
     return res.status(200).json({
