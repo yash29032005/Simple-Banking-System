@@ -21,44 +21,33 @@ export const AuthProvider = ({ children }) => {
     const token = localStorage.getItem("token");
 
     if (!token) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setUser(null);
       setLoading(false);
       return;
     }
+
     const decoded = decodeToken(token);
 
     if (decoded) {
-      setUser({
-        id: decoded.id,
-        name: decoded.name,
-        email: decoded.email,
-        role: decoded.role,
-      });
+      setUser(decoded);
 
-      if (decoded.role === "customer") {
-        navigate("/transactions");
-      } else if (decoded.role === "banker") {
-        navigate("/accounts");
-      }
+      if (decoded.role === "customer") navigate("/transactions");
+      if (decoded.role === "banker") navigate("/accounts");
     } else {
       localStorage.removeItem("token");
       setUser(null);
     }
 
     setLoading(false);
-  }, []);
+  }, [navigate]);
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        setUser,
-        loading,
-      }}
-    >
+    <AuthContext.Provider value={{ user, setUser, loading }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => useContext(AuthContext);
