@@ -6,14 +6,19 @@ Users can register, login, deposit money, withdraw money, and view transaction h
 🚀 Live Demo
 
 👉 Live Website: https://simple-banking-system-q5oc.onrender.com
+
 👉 API Base URL: https://simple-banking-system-api.onrender.com
 
 🔑 Test Login Details
 
 🧑‍💼 Customer Login
+
 Email: customer@gmail.com
+
 Password: customer1234
 
 🏦 Banker Login
+
 Email: banker@gmail.com
+
 Password: banker1234
