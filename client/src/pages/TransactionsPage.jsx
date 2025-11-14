@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
@@ -10,69 +11,57 @@ export default function TransactionsPage() {
   const [popup, setPopup] = useState("");
   const [amount, setAmount] = useState(0);
 
+  const fetchBalance = async () => {
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/${user.id}/balance`
+      );
+
+      setBalance(res.data.balance);
+    } catch (err) {
+      console.error("Error fetching balance:", err);
+    }
+  };
+
+  const fetchTransactions = async () => {
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/${user.id}/transactions`
+      );
+
+      const normalized = res.data.transactions.map((t) => ({
+        ...t,
+        amount: Number(t.amount),
+        balance: Number(t.balance),
+      }));
+
+      setTransactions(normalized);
+    } catch (err) {
+      console.error("Error fetching transactions:", err);
+    }
+  };
+
   useEffect(() => {
-    if (!user) return;
-
-    const fetchBalance = async () => {
-      try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/${user.id}/balance`,
-          {
-            headers: {
-              Authorization: localStorage.getItem("token"),
-            },
-          }
-        );
-
-        setBalance(res.data.balance);
-      } catch (err) {
-        console.error("Error fetching balance:", err);
-      }
-    };
-
     fetchBalance();
-
-    const fetchTransactions = async () => {
-      try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/${user.id}/transactions`,
-          {
-            headers: {
-              Authorization: localStorage.getItem("token"),
-            },
-          }
-        );
-
-        // Normalize numbers for safety
-        const normalized = res.data.transactions.map((t) => ({
-          ...t,
-          amount: Number(t.amount),
-          balance: Number(t.balance),
-        }));
-
-        setTransactions(normalized);
-      } catch (err) {
-        console.error("Error fetching transactions:", err);
-      }
-    };
-
     fetchTransactions();
   }, [user]);
 
   const handleDeposit = async () => {
-    if (!amount || Number(amount) <= 0)
+    const value = Number(amount);
+
+    if (!value || value <= 0) {
       return toast.error("Enter a valid amount");
+    }
 
     try {
       await axios.post(
         `${import.meta.env.VITE_API_URL}/api/${user.id}/deposit`,
-        { amount: Number(amount) },
-        { headers: { Authorization: localStorage.getItem("token") } }
+        { amount: value }
       );
 
       toast.success("Deposit successful");
 
-      setPopup(null);
+      setPopup("");
       setAmount("");
       fetchBalance();
       fetchTransactions();
@@ -84,35 +73,26 @@ export default function TransactionsPage() {
   if (loading) return <div>Loading...</div>;
 
   const handleWithdraw = async () => {
-    if (!amount || Number(amount) <= 0) {
-      alert("Enter a valid amount");
-      return;
+    const value = Number(amount);
+
+    if (!value || value <= 0) {
+      return alert("Enter a valid amount");
     }
 
     try {
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/${user.id}/withdraw`,
-        { amount: Number(amount) },
-        {
-          headers: {
-            Authorization: localStorage.getItem("token"),
-          },
-        }
+        { amount: value }
       );
 
-      // Insufficient funds
       if (res.data.message === "Insufficient funds") {
-        alert("❌ Insufficient Balance");
-        return;
+        return alert("❌ Insufficient Balance");
       }
 
-      // Success
       alert("✔ Withdrawal successful");
 
-      setPopup(null);
+      setPopup("");
       setAmount("");
-
-      // Refresh UI
       fetchBalance();
       fetchTransactions();
     } catch (err) {

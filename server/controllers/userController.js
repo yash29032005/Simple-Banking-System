@@ -16,6 +16,7 @@ exports.getAllUsers = async (req, res) => {
           LIMIT 1
         ), 0) AS balance
       FROM Users u
+      WHERE role="customer"
       ORDER BY u.id DESC
     `);
 

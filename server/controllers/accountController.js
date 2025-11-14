@@ -1,6 +1,9 @@
 const pool = require("../config/db");
 const { generateAccountNo } = require("../utils/generateAccountNo");
 
+// =============================
+// Get all transactions
+// =============================
 exports.getUserTransactions = async (req, res) => {
   try {
     const userId = req.params.userId;
@@ -17,28 +20,38 @@ exports.getUserTransactions = async (req, res) => {
   }
 };
 
+// =============================
+// Deposit
+// =============================
 exports.deposit = async (req, res) => {
   const connection = await pool.getConnection();
   try {
+    await connection.beginTransaction();
+
     const userId = req.params.userId;
     const { amount } = req.body;
 
     if (amount <= 0)
       return res.status(400).json({ message: "Amount must be greater than 0" });
 
-    await connection.beginTransaction();
-
-    // get last balance
-    const [last] = await connection.query(
-      "SELECT balance FROM Accounts WHERE user_id = ? ORDER BY id DESC LIMIT 1",
+    // --- 1. Reuse existing account number ---
+    const [[acc]] = await connection.query(
+      "SELECT account_no FROM Accounts WHERE user_id = ? ORDER BY id ASC LIMIT 1",
       [userId]
     );
 
-    const previousBalance = last.length ? last[0].balance : 0;
-    const newBalance = previousBalance + amount;
+    const account_no = acc ? acc.account_no : generateAccountNo();
 
-    const account_no = generateAccountNo();
+    // --- 2. Get last balance ---
+    const [last] = await connection.query(
+      "SELECT balance FROM Accounts WHERE user_id = ? ORDER BY created_at DESC LIMIT 1",
+      [userId]
+    );
 
+    const previousBalance = last.length ? Number(last[0].balance) : 0;
+    const newBalance = previousBalance + Number(amount);
+
+    // --- 3. Insert the transaction ---
     await connection.query(
       "INSERT INTO Accounts (account_no, user_id, amount, type, balance) VALUES (?,?,?,?,?)",
       [account_no, userId, amount, "deposit", newBalance]
@@ -51,7 +64,7 @@ exports.deposit = async (req, res) => {
       balance: newBalance,
     });
   } catch (err) {
-    console.log("Deposit error:", err);
+    console.error("Deposit error:", err);
     await connection.rollback();
     res.status(500).json({ message: "Internal server error" });
   } finally {
@@ -59,33 +72,45 @@ exports.deposit = async (req, res) => {
   }
 };
 
+// =============================
+// Withdraw
+// =============================
 exports.withdraw = async (req, res) => {
   const connection = await pool.getConnection();
+
   try {
+    await connection.beginTransaction();
+
     const userId = req.params.userId;
     const { amount } = req.body;
 
     if (amount <= 0)
       return res.status(400).json({ message: "Amount must be greater than 0" });
 
-    await connection.beginTransaction();
-
-    // get last balance
-    const [last] = await connection.query(
-      "SELECT balance FROM Accounts WHERE user_id = ? ORDER BY id DESC LIMIT 1",
+    // --- 1. Reuse the same account number ---
+    const [[acc]] = await connection.query(
+      "SELECT account_no FROM Accounts WHERE user_id = ? ORDER BY id ASC LIMIT 1",
       [userId]
     );
 
-    const previousBalance = last.length ? last[0].balance : 0;
+    const account_no = acc ? acc.account_no : generateAccountNo();
+
+    // --- 2. Get last balance ---
+    const [last] = await connection.query(
+      "SELECT balance FROM Accounts WHERE user_id = ? ORDER BY created_at DESC LIMIT 1",
+      [userId]
+    );
+
+    const previousBalance = last.length ? Number(last[0].balance) : 0;
 
     if (previousBalance < amount) {
       await connection.rollback();
       return res.status(400).json({ message: "Insufficient funds" });
     }
 
-    const newBalance = previousBalance - amount;
-    const account_no = generateAccountNo();
+    const newBalance = previousBalance - Number(amount);
 
+    // --- 3. Insert withdraw transaction ---
     await connection.query(
       "INSERT INTO Accounts (account_no, user_id, amount, type, balance) VALUES (?,?,?,?,?)",
       [account_no, userId, amount, "withdraw", newBalance]
@@ -106,18 +131,19 @@ exports.withdraw = async (req, res) => {
   }
 };
 
+// =============================
+// Get Balance
+// =============================
 exports.getBalance = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const userId = req.params.userId;
 
     const [rows] = await pool.query(
-      "SELECT balance FROM Accounts WHERE user_id = ? ORDER BY id DESC LIMIT 1",
+      "SELECT balance FROM Accounts WHERE user_id = ? ORDER BY created_at DESC LIMIT 1",
       [userId]
     );
 
-    const balance = rows.length ? rows[0].balance : 0;
-
-    res.json({ balance });
+    res.json({ balance: rows.length ? rows[0].balance : 0 });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Internal server error" });
