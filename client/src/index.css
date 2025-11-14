@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #181c14;
+  --color-secondary: #2b2b2b;
+  --color-ternary: #373a40;
+  --color-grey: #bbbbbb;
+}
+
+html {
+  scroll-behavior: smooth;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Default (light theme) */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-secondary);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-ternary);
+}
+
+/* Dark theme */
+.dark :where(::-webkit-scrollbar-track) {
+  background: var(--color-primary);
+}
+
+.dark :where(::-webkit-scrollbar-thumb) {
+  background: var(--color-secondary);
+}
+
+.dark :where(::-webkit-scrollbar-thumb:hover) {
+  background: var(--color-ternary);
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-secondary) var(--color-primary);
+}
+
+.dark * {
+  scrollbar-color: var(--color-secondary) var(--color-primary);
+}
