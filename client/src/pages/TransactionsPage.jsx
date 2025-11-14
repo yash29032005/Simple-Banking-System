@@ -76,7 +76,7 @@ export default function TransactionsPage() {
     const value = Number(amount);
 
     if (!value || value <= 0) {
-      return alert("Enter a valid amount");
+      return toast.error("Enter a valid amount");
     }
 
     try {
@@ -89,15 +89,14 @@ export default function TransactionsPage() {
         return alert("❌ Insufficient Balance");
       }
 
-      alert("✔ Withdrawal successful");
-
+      toast.success("Withdrawal successful");
       setPopup("");
       setAmount("");
       fetchBalance();
       fetchTransactions();
     } catch (err) {
       console.error("Withdraw error:", err);
-      alert(err.response?.data?.message || "Withdraw failed");
+      toast.error(err.response?.data?.message || "Withdraw failed");
     }
   };
 
