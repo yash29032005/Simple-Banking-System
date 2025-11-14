@@ -122,7 +122,10 @@ export default function TransactionsPage() {
   };
 
   return (
-    <div style={{ height: "auto", minHeight: "100vh" }} className="bg-black">
+    <div
+      style={{ height: "auto", minHeight: "calc(100vh - 70px)" }}
+      className="bg-black"
+    >
       <div className="p-6 max-w-6xl mx-auto">
         {/* ACCOUNT CARD */}
         <div className="bg-linear-to-r from-secondary to-ternary p-6 rounded-xl text-white shadow-lg">

@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function decodeToken(token) {
   try {
@@ -17,6 +18,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+    const navigate = useNavigate();
 
     if (!token) {
       setUser(null);
@@ -32,6 +34,12 @@ export const AuthProvider = ({ children }) => {
         email: decoded.email,
         role: decoded.role,
       });
+
+      if (decoded.role === "customer") {
+        navigate("/transactions");
+      } else if (decoded.role === "banker") {
+        navigate("/accounts");
+      }
     } else {
       localStorage.removeItem("token");
       setUser(null);
